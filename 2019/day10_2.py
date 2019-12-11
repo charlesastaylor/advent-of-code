@@ -1,5 +1,7 @@
 import math
 
+from common import tadd as add
+
 
 ASTEROID = "#"
 
@@ -30,9 +32,6 @@ def norm(theta):
     while theta < 0:
         theta += 360
     return theta
-
-def add(a, b):
-    return [sum(x) for x in zip(a,b)]
 
 def los(coords, map_):
     def is_on_line(a, b):

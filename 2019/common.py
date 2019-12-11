@@ -80,6 +80,8 @@ def memory_dump(data):
             s += '\n'
     return s
 
+def tadd(a, b):
+    return tuple(sum(x) for x in zip(a,b))
 
 def _intcode(data, debug=False):
     """First iteration of intcode program that used stdin/out for input/output"""
