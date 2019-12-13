@@ -28,7 +28,6 @@ class Game:
     
     def __str__(self):
         return self._get_board_string() + f'Score: {self.score}'
-        self._print_score()
 
     def _get_board_string(self):
         out = ""
