@@ -1,6 +1,6 @@
 INSTRUCTION_LENGTH = {1: 4, 2: 4, 3: 2, 4: 2, 5: 3, 6: 3, 7: 4, 8: 4, 9: 2}
 
-def intcode(data, debug=False):
+def intcode(data, debug=False, prompt_for_input=False):
     """Second iteration of intcode program as a generator that uses yield for input/output"""
     # Variables
     i = 0
@@ -38,6 +38,9 @@ def intcode(data, debug=False):
         elif op == 2:
             data[param_addrs[2]] = params[0] * params[1]
         elif op == 3:
+            if prompt_for_input:
+                # print("Expecting input")
+                yield None
             data[param_addrs[0]] = yield
         elif op == 4:
             yield params[0]
