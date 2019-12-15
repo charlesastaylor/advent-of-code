@@ -1,6 +1,6 @@
 from itertools import combinations
 
-from common import tadd
+from common import tadd, lcm
 
 
 class Moon:
@@ -24,8 +24,8 @@ class Moon:
         return tuple(self.pos) + tuple(self.vel)
 
 positions = [[5, -1, 5], [0, -14, 2], [16, 4, 0], [18, 1, 16]]
-positions = [[-1, 0, 2], [2, -10, -7], [4, -8, 8], [3, 5, -1]]
-positions = [[-8, -10, 0], [5, 5, 10], [2, -7, 3], [9, -8, -3]]
+# positions = [[-1, 0, 2], [2, -10, -7], [4, -8, 8], [3, 5, -1]]
+# positions = [[-8, -10, 0], [5, 5, 10], [2, -7, 3], [9, -8, -3]]
 
 moons = [Moon(pos) for pos in positions]
 states = set()
@@ -33,8 +33,10 @@ initial_state = tuple(moon.state() for moon in moons)
 
 steps = 0
 
-while True:
-    print(f"No steps: {steps} / 4686774924 = {(steps/4686774924)*100:.2f}%", end="\r")
+def get_state_of_axis(state, axis):
+    return tuple((moon[axis], moon[axis + 3]) for moon in state)
+cycles = {}
+while len(cycles) < 3:
     # gravity
     for m1, m2 in combinations(moons, 2):
         for i in range(3):
@@ -49,11 +51,10 @@ while True:
         moon.pos = tadd(moon.pos, moon.vel)
     steps += 1
     current_state = tuple(moon.state() for moon in moons)
-    # if current_state in states:
-    #     break
-    # else:
-    #     states.add(current_state)
-    current_state = tuple(moon.state() for moon in moons)
-    if current_state == initial_state:
-        print('\n' + str(steps))
-        break
+
+    for i in range(3):
+        if get_state_of_axis(current_state, i) == get_state_of_axis(initial_state, i):
+            if i not in cycles:
+                cycles[i] = steps
+
+print(lcm(lcm(cycles[0], cycles[1]), cycles[2]))

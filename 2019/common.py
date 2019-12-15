@@ -1,3 +1,6 @@
+import math
+
+
 INSTRUCTION_LENGTH = {1: 4, 2: 4, 3: 2, 4: 2, 5: 3, 6: 3, 7: 4, 8: 4, 9: 2}
 
 def intcode(data, debug=False, prompt_for_input=False):
@@ -85,6 +88,9 @@ def memory_dump(data):
 
 def tadd(a, b):
     return tuple(sum(x) for x in zip(a,b))
+
+def lcm(a, b):
+    return abs(a * b) // math.gcd(a, b)
 
 def _intcode(data, debug=False):
     """First iteration of intcode program that used stdin/out for input/output"""
