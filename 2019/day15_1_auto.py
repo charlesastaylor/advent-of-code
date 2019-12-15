@@ -11,6 +11,7 @@ DRONE = 'D'
 OXYGEN = 'O'
 
 DIRECTIONS = {1: (0, -1), 2: (0, 1), 3: (-1, 0), 4: (1, 0)}
+REVERSE_DIRECTIONS = {1: 2, 2: 1, 3: 4, 4: 3}
 DINPUT = {258: 2, 259: 1, 260: 3, 261: 4}
 
 class Drone:
@@ -21,6 +22,7 @@ class Drone:
         self.program.send(None) # Initialize
         self.target_found = False
         self.counter = 0
+        self.moves = []
 
     def move(self, direction):
         assert direction in DIRECTIONS, "Invalid direction"
@@ -38,6 +40,7 @@ class Drone:
             self.target_found = True
             self.counter += 1
         next(self.program)
+        return res
 
     def get_map_string(self):
         max_x = max_y = float('-infinity')
@@ -58,6 +61,32 @@ class Drone:
         s += str(self.counter) + '\n'
         return s
 
+    def explore(self, stdscr):
+        stdscr.addstr(0, 0, self.get_map_string())
+        stdscr.refresh()
+        if self.map[self.location] == OXYGEN:
+            time.sleep(10)
+        else:
+            time.sleep(0.1)
+        to_search = []
+        # search around self
+        for d in DIRECTIONS:
+            if tadd(self.location, DIRECTIONS[d]) not in self.map:
+                res = self.move(d)
+                if res == 1 or res == 2:
+                    to_search.append(d)
+                    self.move(REVERSE_DIRECTIONS[d])
+                    self.counter -= 2
+        # stdscr.addstr(0, 0, str(to_search))
+        # stdscr.refresh()
+        # time.sleep(10)
+
+        for d in to_search:
+            self.move(d)
+            self.explore(stdscr)
+            self.move(REVERSE_DIRECTIONS[d])
+            self.counter -= 2
+
 
 with open('day15.txt') as f:
     DRONE_PROGRAM = [int(c) for c in f.readline().strip().split(",")]
@@ -65,15 +94,8 @@ with open('day15.txt') as f:
 def main(stdscr):
     drone = Drone(DRONE_PROGRAM)
     stdscr.clear()
-    c = 0
-    while True:
-        stdscr.addstr(0, 0, drone.get_map_string())
-        stdscr.refresh()
-        c = stdscr.getch()
-        if chr(c) == 'r':
-            drone.counter = 0
-        elif c in DINPUT: 
-            drone.move(DINPUT[c])
+    drone.explore(stdscr)
+    time.sleep(100)
 
 if __name__ == "__main__":
     curses.wrapper(main)
