@@ -61,15 +61,26 @@ class Drone:
         s += str(self.counter) + '\n'
         return s
 
-    def explore(self, stdscr):
-        stdscr.addstr(0, 0, self.get_map_string())
-        stdscr.refresh()
-        if self.map[self.location] == OXYGEN:
-            stdscr.addstr(f'\nTarget Found in {self.counter} steps!')
+    def get_grid(self):
+        max_x = max_y = float('-infinity')
+        min_x = min_y = float('infinity')
+        for location in self.map:
+            max_x = max(max_x, location[0])
+            max_y = max(max_y, location[1])
+            min_x = min(min_x, location[0])
+            min_y = min(min_y, location[1])
+        return [[self.map.get((i, j), UNDISCOVERED) for i in range(min_x, max_x + 1)] for j in range(min_y, max_y + 1)]
+
+    def explore(self, stdscr=None, delay=0.1):
+        if stdscr:
+            stdscr.addstr(0, 0, self.get_map_string())
             stdscr.refresh()
-            time.sleep(5)
-        else:
-            time.sleep(0.005)
+            if self.map[self.location] == OXYGEN:
+                stdscr.addstr(f'\nTarget Found in {self.counter} steps!')
+                stdscr.refresh()
+                time.sleep(5)
+            else:
+                time.sleep(delay)
         to_search = []
         # search around self
         for d in DIRECTIONS:
@@ -82,7 +93,7 @@ class Drone:
         # search each unexplored path
         for d in to_search:
             self.move(d)
-            self.explore(stdscr)
+            self.explore(stdscr, delay)
             self.move(REVERSE_DIRECTIONS[d])
             self.counter -= 2
 
@@ -90,12 +101,52 @@ class Drone:
 with open('day15.txt') as f:
     DRONE_PROGRAM = [int(c) for c in f.readline().strip().split(",")]
 
+# def main(stdscr):
+#     drone = Drone(DRONE_PROGRAM)
+#     stdscr.clear()
+#     drone.explore(stdscr, 0.001)
+#     map_ = drone.map
+#     print(map)
+
+def get_grid_string(grid):
+    s = ""
+    for row in grid:
+        for cell in row:
+            s += cell + ' '
+        s += '\n' 
+    return s
+
 def main(stdscr):
-    drone = Drone(DRONE_PROGRAM)
     stdscr.clear()
-    drone.explore(stdscr)
-    time.sleep(100)
+    drone = Drone(DRONE_PROGRAM)
+    drone.explore()
+    grid = drone.get_grid()
+    w, h = len(grid[0]), len(grid)
+    print(get_grid_string(grid))
+    
+    
+    fronts = [(7, 37)]
+    OLD_OXYGEN = 'o'
+    steps = 0
+    while len(fronts) > 0:
+        new_fronts = []
+        for front in fronts:
+            for d in DIRECTIONS.values():
+                x, y = tadd(front, d)
+                if grid[y][x] == EMPTY:
+                    grid[y][x] == OXYGEN
+                    new_fronts.append((x, y))
+            grid[front[1]][front[0]] = OLD_OXYGEN
+        fronts = new_fronts
+        steps += 1
+        stdscr.addstr(0, 0, get_grid_string(grid) + f'\n Steps: {steps}')
+        stdscr.refresh()
+        time.sleep(0.05)
+    time.sleep(10)
+
+# program gets to 345 steps but answer is 344, not sure why...
+                    
 
 if __name__ == "__main__":
     curses.wrapper(main)
-        
+    
