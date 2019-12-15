@@ -64,12 +64,12 @@ class Game:
 
 game = Game(game_input)
 window = curses.initscr()
-frame_delay = 0.1
+frame_delay = 0.01
 try:
     while True:
         game.update_board()
         window.addstr(0, 0, str(game))
-        window.addstr(HEIGHT + 1, 0, f'\n{game.num_blocks}')
+        # window.addstr(HEIGHT + 1, 0, f'\n{game.num_blocks}')
         window.refresh()
        
         if game.num_blocks == 0:

@@ -2,8 +2,8 @@ fname = 'day14.txt'
 fname = 'day14example1.txt'
 fname = 'day14example2.txt'
 fname = 'day14example3.txt'
-# fname = 'day14example4.txt'
-# fname = 'day14example5.txt'
+fname = 'day14example4.txt'
+fname = 'day14example5.txt'
 
 with open(fname) as f:
     reactions = [s.strip() for s in f]
@@ -28,9 +28,11 @@ while any([recipes[chem][1][0][0] != "ORE" for chem, amount in required]):
         if len(ingredients) == 1 and ingredients[0][0] == "ORE":
             new.append((chem, required_amount))
             continue
-        mult = required_amount / recipe_amount
+        # mul = required_amount / recipe_amount
+        q, r = required_amount // recipe_amount, required_amount % recipe_amount
+        mul = q if r == 0 else q + 1
         for n, a in ingredients:
-            new.append((n, mult * a))
+            new.append((n, mul * a))
     required = new
     pp.pprint(required)
 
@@ -49,3 +51,6 @@ for chem in total:
 
 print(total)
 print(total_ore)
+
+# counting too much due to lines 32,33 - just start from scratch using objects
+# so clearer whats happening, keep list of surplus so dont over count
