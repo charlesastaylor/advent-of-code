@@ -22,7 +22,7 @@ WIDTH, HEIGHT = 44, 20
 class Game:
     def __init__(self, game_input):
         self.board = [[0 for _ in range(WIDTH)] for __ in range(HEIGHT)]
-        self.game = intcode(game_input, prompt_for_input=True)
+        self.game = intcode(game_input)
         self.buffer = []
         self.score, self.ball_x, self.paddle_x, self.num_blocks = 0, 0, 0, 341
     

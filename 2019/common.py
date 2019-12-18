@@ -3,7 +3,7 @@ import math
 
 INSTRUCTION_LENGTH = {1: 4, 2: 4, 3: 2, 4: 2, 5: 3, 6: 3, 7: 4, 8: 4, 9: 2}
 
-def intcode(data, debug=False, prompt_for_input=False):
+def intcode(data, debug=False):
     """Second iteration of intcode program as a generator that uses yield for input/output"""
     # Variables
     i = 0
@@ -41,10 +41,10 @@ def intcode(data, debug=False, prompt_for_input=False):
         elif op == 2:
             data[param_addrs[2]] = params[0] * params[1]
         elif op == 3:
-            if prompt_for_input:
-                # print("Expecting input")
-                yield None
-            data[param_addrs[0]] = yield
+            inp = None
+            while inp is None: # loop until we actually get an input
+                inp = yield
+            data[param_addrs[0]] = inp
         elif op == 4:
             yield params[0]
         elif op == 5:
@@ -91,6 +91,14 @@ def tadd(a, b):
 
 def lcm(a, b):
     return abs(a * b) // math.gcd(a, b)
+
+def grid_to_string(grid):
+    s = ''
+    for row in grid:
+        for cell in row:
+            s += cell
+        s += '\n'
+    return s
 
 def _intcode(data, debug=False):
     """First iteration of intcode program that used stdin/out for input/output"""
